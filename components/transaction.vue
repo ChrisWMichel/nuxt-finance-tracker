@@ -1,0 +1,33 @@
+<template>
+  <div class="grid grid-cols-2 justify-items-center py-4 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100">
+    <div class="flex items-center justify-between w-[100%]">
+      <div class="flex items-center space-x-2">
+        <UIcon name="i-heroicons-arrow-up-right" class="w-6 h-6 text-green-600 dark:text-green-400" />
+        <div>Salary</div>
+      </div>
+      <div>
+        <UBadge color="white">Category</UBadge>
+      </div>
+    </div>
+    <div class="flex items-center justify-end space-x-4 w-full">
+      <div>{{currency}}</div>
+      <div>
+        <UDropdown :items="items" :popper="{placement: 'bottom-start'}">
+          <UButton trailing-icon="i-heroicons-ellipsis-horizontal" variant="ghost" ></UButton>
+        </UDropdown>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+const currency = useCurrency(ref(3000))
+const items = [[
+  {label: 'Edit', icon: 'i-heroicons-pencil', action: () => console.log('Edit')},
+  {label: 'Delete', icon: 'i-heroicons-trash', action: () => console.log('Delete')}
+]]
+</script>
+
+<style>
+
+</style>

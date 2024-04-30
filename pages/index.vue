@@ -1,0 +1,32 @@
+<template>
+  <section class="flex justify-between items-center mb-10">
+    <h1 class="text-4xl font-extrabold">Summary</h1>
+    <div>
+      <USelect v-model="selectedView" :options="transactionViewOptions"/>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-2 gap-10 md:grid-cols-4 sm:gap-16 mb-10 justify-items-center">
+    <Trend color="green" title="Income" :amount="4000" :last-amount="3000" :loading="false"/>
+    <Trend color="red" title="Expense" :amount="4000" :last-amount="5000" :loading="false"/>
+    <Trend color="green" title="Investments" :amount="4000" :last-amount="3000" :loading="false"/>
+    <Trend color="red" title="Savings" :amount="4000" :last-amount="4500" :loading="false"/>
+  </section>
+
+  <section>
+    <Transaction/>
+    <Transaction/>
+    <Transaction/>
+    <Transaction/>
+  </section>
+</template>
+
+<script lang="ts" setup>
+import { transactionViewOptions} from '@/constants'
+
+const selectedView = ref(transactionViewOptions[1])
+</script>
+
+<style>
+
+</style>
