@@ -9,11 +9,9 @@ This app uses the following dependencies:
 ```bash
 Nuxt UI
 
-Supabase (DB and Auth)
+Supabase (DB and OAuth)
 
 Tailwindcss
-
-Dark Mode
 
 ZOD
 ```

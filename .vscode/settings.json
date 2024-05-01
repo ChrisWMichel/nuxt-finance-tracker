@@ -1,0 +1,18 @@
+{
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.tabCompletion": "on",
+    "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.fixAll.tslint": "explicit"
+    },
+    "tailwindCSS.includeLanguages": {
+      "plaintext": "html"
+    }
+  }
