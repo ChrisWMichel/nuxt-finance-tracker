@@ -5,12 +5,12 @@
       <USelect v-model="selectedView" :options="transactionViewOptions"/>
     </div>
   </section>
-
-  <section class="grid grid-cols-2 gap-10 md:grid-cols-4 sm:gap-16 mb-10 justify-items-center">
+  <AppModal v-if="showModal">{{ modalMessage }}</AppModal>
+  <section class="grid grid-cols-2 gap-10 md:grid-cols-2 sm:gap-16 mb-10 justify-items-center">
     <Trend color="green" title="Income" :amount="incomeTotal" :last-amount="3000" :loading="isLoading"/>
-    <Trend color="red" title="Expense" :amount="expenseTotal" :last-amount="5000" :loading="isLoading"/>
-    <Trend color="green" title="Investments" :amount="4000" :last-amount="3000" :loading="isLoading"/>
-    <Trend color="red" title="Savings" :amount="4000" :last-amount="4500" :loading="isLoading"/>
+    <Trend color="red" title="Expense" :amount="expenseTotal" :last-amount="40000" :loading="isLoading"/>
+    <!-- <Trend color="green" title="Investments" :amount="4000" :last-amount="3000" :loading="isLoading"/>
+    <Trend color="red" title="Savings" :amount="4000" :last-amount="4500" :loading="isLoading"/> -->
   </section>
 
   <section class="flex justify-between mb-10">
@@ -21,7 +21,8 @@
       </div>
     </div>
     <div>
-       <UButton icon="i-heroicons-plus-circle" variant="solid" >Add</UButton>
+      <AddDataModal @newSubmit="refreshTransactions()" @newData="isNewRecord = true" v-model="isOpen"/>
+       <UButton icon="i-heroicons-plus-circle" variant="solid" @click="isOpen = true" >Add</UButton>
     </div>
   </section>
 
@@ -41,7 +42,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { transactionViewOptions} from '@/constants'
-
+const isNewRecord = ref(false)
+const isOpen = ref(false)
+const modalMessage = ref('')
+const showModal = ref(false)
 type Transaction = {
   id: string,
   amount: number,
@@ -64,13 +68,25 @@ const fetchTransactions = async () => {
     const { data } = await useAsyncData('transactions', async () => {
       const { data, error } = await supabase
         .from('transactions')
-        .select()
+        .select().order('timestamp', { ascending: false })
       if (error) return []
       return data
     })
+    if(isNewRecord.value) {
+      modalMessage.value = 'New record added successfully'
+      showModal.value = true
+    }
+    
     return data.value || []
   } finally {
     isLoading.value = false
+    if(isNewRecord.value) {
+      setTimeout(() => {
+      showModal.value = false
+      isNewRecord.value = false
+    }, 2000)
+      
+    }
   }
 
 }
@@ -80,8 +96,8 @@ const refreshTransactions = async () => transactions.value = await fetchTransact
 
 await refreshTransactions()
 
-const income = computed(() => transactions.value.filter(tran => tran.type === 'income'))
-const expense = computed(() => transactions.value.filter(tran => tran.type === 'expense'))
+const income = computed(() => transactions.value.filter(tran => tran.type === 'Income'))
+const expense = computed(() => transactions.value.filter(tran => tran.type === 'Expense'))
 const incomeCount = computed(() => income.value.length)
 const expenseCount = computed(() => expense.value.length)
 const incomeTotal = computed(() => income.value.reduce((acc, tran) => acc + tran.amount, 0))
@@ -98,7 +114,6 @@ const transactionsGroupByDate = computed(() => {
   }
   return grouped;
 })
-
 
 </script>
 

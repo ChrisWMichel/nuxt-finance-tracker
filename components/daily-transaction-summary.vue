@@ -34,7 +34,7 @@ const sum = computed(() => {
   let sum = 0;
   let tran: Transaction;
   for( tran of props.transactions) {
-    if(tran.type === 'income') {
+    if(tran.type === 'Income') {
       sum += tran.amount
     } else {
       sum -= tran.amount

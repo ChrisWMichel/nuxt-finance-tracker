@@ -1,7 +1,7 @@
 <template>
   <AppModal v-if="showModal">{{ modalMessage }}</AppModal>
-  <div class="grid grid-cols-2 justify-items-center py-4 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100">
-    <div class="flex items-center justify-between w-[100%]">
+  <div class="grid grid-cols-3 justify-items-center py-4 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100">
+    <div class="flex items-center justify-between w-[100%] space-x-4 col-span-2">
       <div class="flex items-center space-x-2">
         <UIcon :name="icon" class="w-6 h-6 " :class="['text-' + iconColor + '-600']" />
         <div>{{ tran.description }}</div>
@@ -46,7 +46,8 @@ const isLoading = ref(false)
 
 const currency = useCurrency(ref(props.tran.amount))
 
-const isIncome = computed(() => props.tran.type === 'income')
+const isIncome = computed(() => props.tran.type === 'Income')
+
 const icon = computed(() => {
   return isIncome.value ? 'i-heroicons-arrow-up-right' : 'i-heroicons-arrow-down-left'
 })
