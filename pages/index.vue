@@ -7,8 +7,8 @@
   </section>
   <AppModal v-if="showModal">{{ modalMessage }}</AppModal>
   <section class="grid grid-cols-2 gap-10 md:grid-cols-2 sm:gap-16 mb-10 justify-items-center">
-    <Trend color="green" title="Income" :amount="incomeTotal" :last-amount="3000" :loading="isLoading"/>
-    <Trend color="red" title="Expense" :amount="expenseTotal" :last-amount="40000" :loading="isLoading"/>
+    <Trend color="green" title="Income" :amount="incomeTotal" :last-amount="prevIncomeTotal" :loading="isLoading"/>
+    <Trend color="red" title="Expense" :amount="expenseTotal" :last-amount="prevExpenseTotal" :loading="isLoading"/>
     <!-- <Trend color="green" title="Investments" :amount="4000" :last-amount="3000" :loading="isLoading"/>
     <Trend color="red" title="Savings" :amount="4000" :last-amount="4500" :loading="isLoading"/> -->
   </section>
@@ -42,6 +42,7 @@
 <script setup>
 import { transactionViewOptions} from '@/constants'
 const selectedView = ref(transactionViewOptions[1])
+const {current, previous} = useSelectedTimePeriod(selectedView)
 
 const {
     isNewRecord,
@@ -55,12 +56,20 @@ const {
     isOpen,
     refresh,
     transactionsGroupByDate
-} = useFetchTransactions()
-
-
-
-
+} = useFetchTransactions(current)
 await refresh()
+
+const {
+  refresh: prevRefresh,
+  incomeTotal: prevIncomeTotal,
+  expenseTotal: prevExpenseTotal,
+} = useFetchTransactions(previous) 
+await prevRefresh()
+
+
+
+
+
 
 
 

@@ -26,14 +26,19 @@ export const useFetchTransactions = (period) => {
   const fetchTransactions = async () => {
     isLoading.value = true;
     try {
-      const { data } = await useAsyncData("transactions", async () => {
-        const { data, error } = await supabase
-          .from("transactions")
-          .select()
-          .order("timestamp", { ascending: false });
-        if (error) return [];
-        return data;
-      });
+      const { data } = await useAsyncData(
+        `transactions-${period.value.to.toDateString()}-${period.value.from.toDateString()}`,
+        async () => {
+          const { data, error } = await supabase
+            .from("transactions")
+            .select()
+            .gte("timestamp", period.value.from.toISOString())
+            .lte("timestamp", period.value.to.toISOString())
+            .order("timestamp", { ascending: false });
+          if (error) throw error;
+          return data;
+        }
+      );
       if (isNewRecord.value) {
         modalMessage.value = "New record added successfully";
         showModal.value = true;
@@ -53,6 +58,10 @@ export const useFetchTransactions = (period) => {
   };
 
   const refresh = async () => (transactions.value = await fetchTransactions());
+
+  onMounted(() => {
+    watch(period, async () => await refresh());
+  });
 
   const transactionsGroupByDate = computed(() => {
     let grouped = {};
