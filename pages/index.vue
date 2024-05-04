@@ -21,7 +21,7 @@
       </div>
     </div>
     <div>
-      <AddDataModal @newSubmit="refreshTransactions()" @newData="isNewRecord = true" v-model="isOpen"/>
+      <AddDataModal @newSubmit="refresh()" @newData="isNewRecord = true" v-model="isOpen"/>
        <UButton icon="i-heroicons-plus-circle" variant="solid" @click="isOpen = true" >Add</UButton>
     </div>
   </section>
@@ -30,7 +30,7 @@
     <div v-for="(transactionOnDay, date) in transactionsGroupByDate" :key="date" class="mb-10">
       <DailyTransactionSummary :date="date.toString()" :transactions="transactionOnDay"/>
       <div class="grid grid-cols-1 gap-4">
-        <Transaction v-for="tran in transactionOnDay" :key="tran.id" :tran="tran" @deleted="refreshTransactions"/>
+        <Transaction v-for="tran in transactionOnDay" :key="tran.id" :tran="tran" @deleted="refresh"/>
       </div>
     </div>
   </section>
@@ -39,81 +39,31 @@
   </section>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue';
+<script setup>
 import { transactionViewOptions} from '@/constants'
-const isNewRecord = ref(false)
-const isOpen = ref(false)
-const modalMessage = ref('')
-const showModal = ref(false)
-type Transaction = {
-  id: string,
-  amount: number,
-  description: string,
-  category: string,
-  timestamp: string,
-  type: string
-}
-
 const selectedView = ref(transactionViewOptions[1])
-const supabase = useSupabaseClient()
-const transactions =  ref<Transaction[]>([])
-const isLoading = ref(false)
+
+const {
+    isNewRecord,
+    modalMessage,
+    showModal,
+    isLoading,
+    incomeCount,
+    expenseCount,
+    incomeTotal,
+    expenseTotal,
+    isOpen,
+    refresh,
+    transactionsGroupByDate
+} = useFetchTransactions()
 
 
-// Fetch transactions
-const fetchTransactions = async () => {
-  isLoading.value = true
-  try {
-    const { data } = await useAsyncData('transactions', async () => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select().order('timestamp', { ascending: false })
-      if (error) return []
-      return data
-    })
-    if(isNewRecord.value) {
-      modalMessage.value = 'New record added successfully'
-      showModal.value = true
-    }
-    
-    return data.value || []
-  } finally {
-    isLoading.value = false
-    if(isNewRecord.value) {
-      setTimeout(() => {
-      showModal.value = false
-      isNewRecord.value = false
-    }, 2000)
-      
-    }
-  }
-
-}
 
 
-const refreshTransactions = async () => transactions.value = await fetchTransactions()
+await refresh()
 
-await refreshTransactions()
 
-const income = computed(() => transactions.value.filter(tran => tran.type === 'Income'))
-const expense = computed(() => transactions.value.filter(tran => tran.type === 'Expense'))
-const incomeCount = computed(() => income.value.length)
-const expenseCount = computed(() => expense.value.length)
-const incomeTotal = computed(() => income.value.reduce((acc, tran) => acc + tran.amount, 0))
-const expenseTotal = computed(() => expense.value.reduce((acc, tran) => acc + tran.amount, 0))
 
-const transactionsGroupByDate = computed(() => {
-  let grouped: { [key: string]: any[] } = {}
-  for(const tran of transactions.value) {
-    const date = new Date(tran.timestamp).toISOString().split('T')[0]
-    if(!grouped[date]) {
-      grouped[date] = []
-    }
-    grouped[date].push(tran)
-  }
-  return grouped;
-})
 
 </script>
 

@@ -43,7 +43,7 @@ const props = defineProps({
 
 const isLoading = ref(false)
 
-const emit = defineEmits(['newSubmit', 'update:modelValue'])
+const emit = defineEmits(['newSubmit', 'newData', 'update:modelValue'])
 
 const initialState = {
   amount: 0,
@@ -100,11 +100,6 @@ const resetForm = () => {
 
 const addData = async () => {
   if(form.value.errors.length) return
-
-  console.log('timestamp:', typeof transaction.timestamp);
-console.log('description:', typeof transaction.description);
-console.log('type:', typeof transaction.type);
-console.log('category:', typeof transaction.category);
   // Add data to the database
   
    try{
@@ -112,7 +107,6 @@ console.log('category:', typeof transaction.category);
     if (error) {
       console.error('Failed to add data', error);
     } else {
-      console.log('Data added successfully');
       emit('newSubmit');
       emit( 'newData')
     }
