@@ -12,7 +12,7 @@
             Signed in as
           </p>
           <p class="font-medium text-gray-900 dark:text-white">
-            {{ item.label }}
+            {{ user.email }}
           </p>
         </div>
       </template>
@@ -38,7 +38,7 @@ const items = [
   }], [{
     label: 'Settings',
     icon: 'i-heroicons-cog-8-tooth',
-    click: () => console.log('Link to settings in the future')
+    click: () => navigateTo('/settings/profile')
   }, {
     label: 'Sign out',
     icon: 'i-heroicons-arrow-left-on-rectangle',

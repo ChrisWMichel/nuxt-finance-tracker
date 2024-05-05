@@ -1,12 +1,12 @@
 <template>
-  <section class="flex justify-between items-center mb-10">
+  <section class="flex items-center justify-between mb-10">
     <h1 class="text-4xl font-extrabold">Summary</h1>
     <div>
       <USelect v-model="selectedView" :options="transactionViewOptions"/>
     </div>
   </section>
   <AppModal v-if="showModal">{{ modalMessage }}</AppModal>
-  <section class="grid grid-cols-2 gap-10 md:grid-cols-2 sm:gap-16 mb-10 justify-items-center">
+  <section class="grid grid-cols-2 gap-10 mb-10 md:grid-cols-2 sm:gap-16 justify-items-center">
     <Trend color="green" title="Income" :amount="incomeTotal" :last-amount="prevIncomeTotal" :loading="isLoading"/>
     <Trend color="red" title="Expense" :amount="expenseTotal" :last-amount="prevExpenseTotal" :loading="isLoading"/>
     <!-- <Trend color="green" title="Investments" :amount="4000" :last-amount="3000" :loading="isLoading"/>
@@ -14,8 +14,8 @@
   </section>
 
   <section class="flex justify-between mb-10">
-    <div class="flex justify-between items-center mb-10">
-      <h3 class="text-lg font-extrabold pr-2">Transactions:</h3>
+    <div class="flex items-center justify-between mb-10">
+      <h3 class="pr-2 text-lg font-extrabold">Transactions:</h3>
       <div class="text-gray-500 dark:text-gray-400">
         You have {{ incomeCount }} income and {{ expenseCount }} expense transactions this period.
       </div>
@@ -35,13 +35,14 @@
     </div>
   </section>
   <section v-else>
-    <USkeleton class="h-8 w-full mb-2" v-for="i in 4" :key="i" />
+    <USkeleton class="w-full h-8 mb-2" v-for="i in 4" :key="i" />
   </section>
 </template>
 
 <script setup>
 import { transactionViewOptions} from '@/constants'
-const selectedView = ref(transactionViewOptions[1])
+const user = useSupabaseUser()
+const selectedView = ref(user.value.user_metadata?.transaction_view ?? transactionViewOptions[1])
 const {current, previous} = useSelectedTimePeriod(selectedView)
 
 const {
