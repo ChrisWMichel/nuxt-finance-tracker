@@ -66,7 +66,7 @@ export const useFetchTransactions = (period) => {
   const transactionsGroupByDate = computed(() => {
     let grouped = {};
     for (const tran of transactions.value) {
-      const date = new Date(tran.timestamp).toISOString().split("T")[0];
+      const date = new Date(tran.timestamp).toLocaleDateString();
       if (!grouped[date]) {
         grouped[date] = [];
       }

@@ -30,7 +30,7 @@
     <div v-for="(transactionOnDay, date) in transactionsGroupByDate" :key="date" class="mb-10">
       <DailyTransactionSummary :date="date.toString()" :transactions="transactionOnDay"/>
       <div class="grid grid-cols-1 gap-4">
-        <Transaction v-for="tran in transactionOnDay" :key="tran.id" :tran="tran" @deleted="refresh"/>
+        <Transaction v-for="tran in transactionOnDay" :key="tran.id" :tran="tran" @deleted="refresh()" @updated="refresh()"/>
       </div>
     </div>
   </section>

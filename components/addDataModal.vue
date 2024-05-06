@@ -4,11 +4,11 @@
     <UModal v-model="isOpen" >
       <UCard>
         <template #header>
-          Add Transaction
+          {{ isEditing ? 'Edit' : 'Add' }} Transaction
         </template>
-          <UForm :state="newData" :schema="schema" ref="form" @submit="addData">
+          <UForm :state="newData" :schema="schema" ref="form" @submit="addEditData">
             <UFormGroup label="Transaction Type" :required="true" name="type" class="mb-4">
-            <USelect placeholder="Transaction Type" v-model="newData.type" :options="types" />
+            <USelect :disabled="isEditing" placeholder="Transaction Type" v-model="newData.type" :options="types" />
           </UFormGroup>
           <UFormGroup label="Amount" :required="true" name="amount" class="mb-4">
             <UInput placeholder="Amount" type="number" v-model.number="newData.amount"/>
@@ -38,14 +38,26 @@ import { categories, types } from '~/constants';
 import {z} from 'zod'
 const supabase = useSupabaseClient()
 const props = defineProps({
-  modelValue: Boolean
+  modelValue: Boolean,
+  transaction:{
+    type: Object,
+    required: false
+  }
 })
+
+const isEditing = computed(() => !!props.transaction)
 
 const isLoading = ref(false)
 
-const emit = defineEmits(['newSubmit', 'newData', 'update:modelValue'])
+const emit = defineEmits(['newSubmit', 'newData', 'update:modelValue', 'saved'])
 
-const initialState = {
+const initialState = isEditing.value ? {
+  amount: props.transaction.amount,
+  timestamp: props.transaction.timestamp.split('T')[0],
+  description: props.transaction.description,
+  category: props.transaction.type === 'Expense' ? props.transaction.category : '',
+  type: props.transaction.type
+}: {
   amount: 0,
   timestamp: '',
   description: '',
@@ -53,9 +65,7 @@ const initialState = {
   type: ''
 }
 
-const newData = ref({
-  ...initialState
-})
+const newData = ref({...initialState})
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -77,6 +87,7 @@ const defaultSchema = z.object({
 
 const incomeSchema = z.object({
   type: z.literal('Income'),
+  category: z.string().optional(),
 });
 const expenseSchema = z.object({
   type: z.literal('Expense'),
@@ -92,23 +103,33 @@ const form = ref()
 
 let transaction = reactive({ ...initialState });
 const resetForm = () => {
+  // Object.assign(newData.value, initialState)
+  // Object.keys(initialState).forEach(key => {
+  //   transaction[key] = initialState[key];
+  // });
   Object.assign(newData.value, initialState)
-  Object.keys(initialState).forEach(key => {
-    transaction[key] = initialState[key];
-  });
+  form.value.clear
 }
 
-const addData = async () => {
+const addEditData = async () => {
   if(form.value.errors.length) return
   // Add data to the database
-  
+  if(form.value.errors.length) {
+  console.log('Form errors:', form.value.errors);
+  return;
+}
    try{
-    const {error} = await supabase.from('transactions').upsert({...newData.value})
+    const {error} = await supabase.from('transactions')
+    .upsert({
+      ...newData.value,
+      id: props.transaction?.id
+    })
     if (error) {
       console.error('Failed to add data', error);
     } else {
       emit('newSubmit');
-      emit( 'newData')
+      emit( 'newData');
+      emit('saved');
     }
    }
     catch(error){

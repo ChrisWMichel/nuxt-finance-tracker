@@ -1,6 +1,6 @@
 <template>
   <AppModal v-if="showModal">{{ modalMessage }}</AppModal>
-  <div class="grid grid-cols-3 justify-items-center py-4 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100">
+  <div class="grid grid-cols-3 py-4 text-gray-900 border-b border-gray-200 justify-items-center dark:border-gray-800 dark:text-gray-100">
     <div class="flex items-center justify-between w-[100%] space-x-4 col-span-2">
       <div class="flex items-center space-x-2">
         <UIcon :name="icon" class="w-6 h-6 " :class="['text-' + iconColor + '-600']" />
@@ -10,11 +10,12 @@
         <UBadge color="white" v-if="tran.category" >{{ tran.category }}</UBadge>
       </div>
     </div>
-    <div class="flex items-center justify-end space-x-4 w-full">
+    <div class="flex items-center justify-end w-full space-x-4">
       <div>{{currency}}</div>
       <div>
         <UDropdown :items="items" :popper="{placement: 'bottom-start'}">
           <UButton trailing-icon="i-heroicons-ellipsis-horizontal" variant="ghost" :loading="isLoading" ></UButton>
+          <addDataModal v-model="isOpen" :transaction="tran" @saved="emit('updated')" />
         </UDropdown>
       </div>
     </div>
@@ -32,7 +33,7 @@ const supabase = useSupabaseClient()
 //   type: string
 // }
 
-const emit = defineEmits(['deleted'])
+const emit = defineEmits(['deleted', 'updated'])
 
 const props = defineProps({
   tran: {
@@ -43,6 +44,7 @@ const props = defineProps({
 const showModal = ref(false)
 const modalMessage = ref('this is a modal')
 const isLoading = ref(false)
+const isOpen = ref(false)
 
 const currency = useCurrency(ref(props.tran.amount))
 
@@ -84,7 +86,7 @@ const items = [[
 {
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => console.log('Edit transaction with id:')
+      click: () => isOpen.value = true
     },
     {
       label: 'Delete',
