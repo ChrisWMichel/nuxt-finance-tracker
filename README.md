@@ -9,7 +9,7 @@ This app uses the following dependencies:
 ```bash
 Nuxt UI
 
-Supabase (DB and OAuth)
+Supabase (DB, OAuth and Storage)
 
 Tailwindcss
 
