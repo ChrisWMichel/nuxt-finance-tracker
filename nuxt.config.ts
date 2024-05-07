@@ -3,6 +3,11 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@nuxtjs/tailwindcss", "@nuxtjs/supabase", ],
+  vite: {
+    optimizeDeps: {
+      include: ['date-fns']
+    }
+  },
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
