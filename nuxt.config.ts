@@ -8,6 +8,13 @@ export default defineNuxtConfig({
     key: process.env.SUPABASE_KEY,
     redirect: true
   },
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+      baseUrl: process.env.BASE_URL ?? 'http://localhost:3000',
+    }
+  },
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {

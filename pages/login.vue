@@ -11,7 +11,7 @@
           <UInput type="email" placeholder="Enter your email" required v-model="email" autocomplete="email" />
         </UFormGroup>
 
-        <div class="flex justify-center items-center">
+        <div class="flex items-center justify-center">
           <UButton type="submit" variant="solid" color="black" :loading="pending" :disabled="pending">
           Sign in
         </UButton>
@@ -41,6 +41,7 @@ const pending = ref(false)
 const modalMessage = ref('')
 const showModal = ref(false)
 const supabase = useSupabaseClient()
+const redirectUrl = useRuntimeConfig().public.baseUrl
 
 useRedirectIfAuthenticated()
 
@@ -50,7 +51,7 @@ const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOtp({
        email: email.value,
        options:{
-          emailRedirectTo: 'http://localhost:3000/confirm'
+          emailRedirectTo: `${redirectUrl}/confirm`
        } 
       })
     if (error) {
