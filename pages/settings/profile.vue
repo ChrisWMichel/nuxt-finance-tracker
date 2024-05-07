@@ -30,7 +30,7 @@ const schema = z.object({
 })
 
 const state = ref({
-  name: user.value?.user_metadata.full_name,
+  name: user.value?.user_metadata?.full_name,
   email: user.value?.email
 });
 

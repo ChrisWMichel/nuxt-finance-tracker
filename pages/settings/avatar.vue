@@ -44,7 +44,7 @@ const saveAvatar = async () => {
   try {
     uploading.value = true
 
-    const currentAvatar = user.value.user_metadata?.avatar_url
+    const currentAvatar = user.value?.user_metadata?.avatar_url
     if (currentAvatar) {
       const {error} = await supabase.storage.from('avatars').remove([currentAvatar])
       if (error) throw error
